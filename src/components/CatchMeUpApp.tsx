@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Coffee, History, ListOrdered, Radio, SlidersHorizontal, X } from "lucide-react";
-import { MATCH, OVERS, overIndexAt, skipOvers, stateAt } from "@/lib/match";
+import { Coffee, History, ListOrdered, MessageCircle, Radio, SlidersHorizontal, X } from "lucide-react";
+import { MATCH, OVERS, TEAMS, overIndexAt, skipOvers, stateAt } from "@/lib/match";
 import { languageOf, type Profile } from "@/lib/profile";
 import { useReplayClock } from "./useReplayClock";
 import { useSavedProfile } from "./browser";
@@ -13,9 +13,10 @@ import { ScoreHeader } from "./ScoreHeader";
 import { MomentumChart } from "./MomentumChart";
 import { BallFeed } from "./BallFeed";
 import { Scorecard } from "./Scorecard";
+import { AskPanel, type ChatMessage } from "./AskPanel";
 import { TeamBadge } from "./ui";
 
-type Tab = "live" | "scorecard";
+type Tab = "live" | "ask" | "scorecard";
 
 const DEFAULT_JOIN = JUMP_POINTS[3];
 const MIN_AWAY_BALLS = 6; // roughly an over; anything shorter isn't worth a recap
@@ -31,6 +32,8 @@ export function CatchMeUpApp() {
   const [demoOpen, setDemoOpen] = useState(false);
   const [gap, setGap] = useState<Gap | null>(null);
   const [stepping, setStepping] = useState<number | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [asking, setAsking] = useState(false);
   const awayFrom = useRef<number | null>(null);
   const gapIds = useRef(0);
 
@@ -84,6 +87,31 @@ export function CatchMeUpApp() {
       setStepping(null);
       openGap(from, to, "away");
     }, STEP_AWAY_MS);
+  };
+
+  const ask = async (text: string) => {
+    if (!profile || asking) return;
+    const at = clock.currentBall();
+    const thread: ChatMessage[] = [...messages, { role: "user", text, at }];
+    setMessages(thread);
+    setAsking(true);
+    setTab("ask");
+    let reply: ChatMessage = { role: "model", text: "Sorry, I couldn't answer that just now. Please try again.", at, source: "fallback" };
+    try {
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ at, profile, messages: thread.map(({ role, text }) => ({ role, text })) }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        reply = { role: "model", text: data.answer, at, source: data.source };
+      }
+    } catch {
+      // keep the apology reply
+    }
+    setMessages((m) => [...m, reply]);
+    setAsking(false);
   };
 
   const recapLast = (overs: number) => {
@@ -178,7 +206,7 @@ export function CatchMeUpApp() {
             <div className="scroll-thin flex-1 space-y-3 overflow-y-auto p-3">
               {tab === "live" && (
                 <>
-                  {gap && <CatchUpPanel key={gap.id} gap={gap} profile={profile} onDismiss={() => setGap(null)} />}
+                  {gap && <CatchUpPanel key={gap.id} gap={gap} profile={profile} onDismiss={() => setGap(null)} onAsk={ask} />}
                   <ScoreHeader s={s} />
                   {!gap && s.n > 0 && (
                     <div className="flex items-center gap-2 px-1 text-xs text-muted">
@@ -195,18 +223,23 @@ export function CatchMeUpApp() {
                       ))}
                     </div>
                   )}
-                  <MomentumChart n={s.n} />
+                  <MomentumChart
+                    n={s.n}
+                    onExplain={(tp) => ask(`Why was over ${tp.over.o + 1} of the ${TEAMS[tp.over.i]} innings (${tp.over.bowler} bowling) such a big moment?`)}
+                  />
                   <BallFeed n={s.n} />
                 </>
               )}
+              {tab === "ask" && <AskPanel s={s} profile={profile} messages={messages} pending={asking} onSend={ask} />}
               {tab === "scorecard" && <Scorecard s={s} />}
-              <p className="px-2 pb-2 pt-1 text-center text-[10px] text-muted/70">Ball-by-ball data: {MATCH.source}</p>
+              {tab !== "ask" && <p className="px-2 pb-2 pt-1 text-center text-[10px] text-muted/70">Ball-by-ball data: {MATCH.source}</p>}
             </div>
 
-            <nav className="grid grid-cols-2 border-t border-line bg-bg">
+            <nav className="grid grid-cols-3 border-t border-line bg-bg">
               {(
                 [
                   ["live", "Live", Radio],
+                  ["ask", "Ask", MessageCircle],
                   ["scorecard", "Scorecard", ListOrdered],
                 ] as const
               ).map(([id, label, Icon]) => (

@@ -165,6 +165,47 @@ export function recapPrompt(from: number, to: number, p: Profile) {
   return { system, user };
 }
 
+function scorecardText(n: number): string {
+  return stateAt(n)
+    .innings.filter((inn) => inn.started)
+    .map((inn) => {
+      const batting = inn.batters
+        .filter((b) => b.balls > 0 || b.out)
+        .map((b) => `${fullName(b.id)} ${b.runs}${b.out ? "" : "*"} (${b.balls}b, ${b.fours}x4, ${b.sixes}x6)${b.out ? ` ${b.out}` : ""}`)
+        .join("; ");
+      const bowling = inn.bowlers.map((b) => `${fullName(b.id)} ${oversText(b.balls)}-${b.maidens}-${b.runs}-${b.wkts}`).join("; ");
+      return `${inn.team} ${scoreText(inn)} (${oversText(inn.balls)} overs${inn.complete ? ", innings complete" : ", in progress"})\n  Batting: ${batting}\n  ${inn.bowlingTeam} bowling (overs-maidens-runs-wickets): ${bowling}`;
+    })
+    .join("\n");
+}
+
+export function askSystemPrompt(n: number, p: Profile): string {
+  const recentFrom = OVERS[Math.max(0, OVERS.findIndex((ov) => n > ov.startN && n <= ov.endN) - 2)]?.startN ?? 0;
+  const turning = OVERS.filter((ov) => ov.endN <= n)
+    .map((ov) => ({ ov, swing: stateAt(ov.endN).winProb - stateAt(ov.startN).winProb }))
+    .filter((t) => Math.abs(t.swing) >= 0.1)
+    .map((t) => `- ${TEAMS[t.ov.i]} innings, over ${t.ov.o + 1} (${fullName(t.ov.bowler)}): ${t.ov.runs} runs, ${t.ov.wkts} wkts, win chance moved ${Math.round(Math.abs(t.swing) * 100)} points toward ${t.swing > 0 ? TEAMS[0] : TEAMS[1]}`)
+    .join("\n");
+
+  return [
+    "You are Catch Me Up, a friendly live cricket companion inside a sports app, chatting with a fan during a match.",
+    SPOILER_RULE,
+    "When you mention a player's background, only use things from before this match. Never mention anything later in their careers.",
+    "Answer from the match data below. For questions about rules or cricket terms, explain simply from general knowledge. If asked who will win, use the win-chance numbers and what each side needs; frame it as chances, never as a prediction. If the question is not about cricket or this match, steer back to the match politely in one line.",
+    "Keep answers short: 2 to 4 sentences, under 70 words, conversational. No markdown headings or bullet lists unless the fan asks for a list.",
+    LEVEL_RULES[p.level],
+    LANGUAGE_RULES[p.language],
+    `FAN\n${profileText(p, n)}`,
+    `MATCH\n${MATCH.event}: ${TEAMS[0]} vs ${TEAMS[1]} at ${MATCH.venue}. ${MATCH.toss}.`,
+    `NOW\n${situationText(n)}\n${TEAMS[0]} win chance (simple model): ${pct(stateAt(n).winProb)}, ${TEAMS[1]}: ${pct(1 - stateAt(n).winProb)}.`,
+    `SCORECARD SO FAR\n${scorecardText(n)}`,
+    n > 0 ? `LAST FEW OVERS, BALL BY BALL\n${ballLogText(recentFrom, n)}` : "",
+    turning ? `TURNING POINTS SO FAR\n${turning}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+}
+
 export const RECAP_SCHEMA = {
   type: "OBJECT",
   properties: {
@@ -175,3 +216,5 @@ export const RECAP_SCHEMA = {
   required: ["headline", "bullets", "watchNext"],
   propertyOrdering: ["headline", "bullets", "watchNext"],
 };
+
+export type AskResponse = { answer: string; source: "ai" | "fallback"; model?: string };
