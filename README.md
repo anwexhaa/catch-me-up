@@ -2,7 +2,7 @@
 
 **An AI second-screen companion for cricket fans who can't watch every ball.**
 
-Live demo: _add your Vercel URL here_
+**Live demo: https://catch-me-up-lyart.vercel.app**
 
 Most fans can't sit through a 3½-hour T20. They follow it in bursts: between meetings and classes, on the commute, from a different time zone. When they look back at the match, the scoreboard gives them numbers (`147/4 (15)`) but not the story: what happened, does it matter for my team, what should I watch now?
 
