@@ -4,6 +4,9 @@ import { askSystemPrompt, situationText, type AskResponse } from "@/lib/prompts"
 import { generate, type Turn } from "@/lib/gemini";
 import { isBall, rateLimited, readJson } from "@/lib/server-utils";
 
+// Two models x 20s timeout, plus headroom.
+export const maxDuration = 60;
+
 const MAX_TURNS = 8;
 const MAX_CHARS = 600;
 

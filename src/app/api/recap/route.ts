@@ -5,6 +5,9 @@ import { fallbackRecap, moodFor, type Recap, type RecapResponse } from "@/lib/re
 import { AIUnavailableError, generateJSON } from "@/lib/gemini";
 import { LRU, isBall, rateLimited, readJson } from "@/lib/server-utils";
 
+// Two models x 20s timeout, plus headroom.
+export const maxDuration = 60;
+
 const cache = new LRU<RecapResponse>();
 
 const clean = (r: Recap): Recap | null => {

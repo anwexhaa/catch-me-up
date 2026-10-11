@@ -15,6 +15,7 @@ import { BallFeed } from "./BallFeed";
 import { Scorecard } from "./Scorecard";
 import { AskPanel, type ChatMessage } from "./AskPanel";
 import { TeamBadge } from "./ui";
+import { AboutCard } from "./AboutCard";
 
 type Tab = "live" | "ask" | "scorecard";
 
@@ -165,7 +166,7 @@ export function CatchMeUpApp() {
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-accent to-accent-2 text-black">
             <History size={16} strokeWidth={2.5} />
           </span>
-          <span className="font-semibold tracking-tight">Catch Me Up</span>
+          <span className="whitespace-nowrap font-semibold tracking-tight">Catch Me Up</span>
           {profile && (
             <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold tracking-wider text-accent">
               <span className="live-dot h-1.5 w-1.5 rounded-full bg-accent" /> LIVE
@@ -176,17 +177,18 @@ export function CatchMeUpApp() {
               <button
                 type="button"
                 onClick={() => setEditingProfile(true)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line py-0.5 pl-0.5 pr-2.5 text-xs text-muted hover:text-text"
+                className="inline-flex items-center gap-1.5 rounded-full border border-line p-0.5 text-xs text-muted hover:text-text min-[400px]:pr-2.5"
                 aria-label="Edit your preferences"
               >
                 {profile.team ? <TeamBadge team={profile.team} size="sm" /> : <span className="px-1.5">Neutral</span>}
-                {languageOf(profile.language).native}
+                <span className="hidden min-[400px]:inline">{languageOf(profile.language).native}</span>
               </button>
             )}
             <button
               type="button"
               onClick={() => setDemoOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-xs text-muted hover:text-text lg:hidden"
+              className="inline-flex items-center gap-1.5 rounded-full border border-line px-2 py-1 text-xs text-muted hover:text-text sm:px-2.5 lg:hidden"
+              aria-label="Demo controls"
             >
               <SlidersHorizontal size={13} /> Demo
             </button>
@@ -278,11 +280,17 @@ export function CatchMeUpApp() {
 
         {demoOpen && (
           <div className="absolute inset-0 z-20 flex flex-col justify-end bg-black/60 lg:hidden" onClick={() => setDemoOpen(false)}>
-            <div className="rise-in rounded-t-3xl border-t border-line bg-surface p-5" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="rise-in scroll-thin max-h-[88%] overflow-y-auto rounded-t-3xl border-t border-line bg-surface p-5"
+              onClick={(e) => e.stopPropagation()}
+            >
               <button type="button" onClick={() => setDemoOpen(false)} className="float-right text-muted" aria-label="Close demo controls">
                 <X size={18} />
               </button>
               {controls}
+              <div className="mt-6 border-t border-line pt-5">
+                <AboutCard />
+              </div>
             </div>
           </div>
         )}
@@ -290,6 +298,9 @@ export function CatchMeUpApp() {
 
       <aside className="hidden w-[340px] shrink-0 space-y-4 lg:block">
         <div className="rounded-2xl border border-line bg-surface p-5">{controls}</div>
+        <div className="rounded-2xl border border-line bg-surface p-5">
+          <AboutCard />
+        </div>
       </aside>
     </main>
   );
