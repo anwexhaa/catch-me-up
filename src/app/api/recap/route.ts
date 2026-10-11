@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       system,
       turns: [{ role: "user", text: user }],
       schema: RECAP_SCHEMA,
-      maxTokens: 900,
+      maxTokens: 2048,
     });
     const recap = clean(data);
     if (!recap) throw new AIUnavailableError(`${model}: malformed recap`);

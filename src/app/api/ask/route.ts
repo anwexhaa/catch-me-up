@@ -47,7 +47,7 @@ export async function POST(request: Request) {
   if (rateLimited(request)) return Response.json(fallback(at));
 
   try {
-    const { text, model } = await generate({ system: askSystemPrompt(at, profile), turns, maxTokens: 400, temperature: 0.6 });
+    const { text, model } = await generate({ system: askSystemPrompt(at, profile), turns, maxTokens: 1024, temperature: 0.6 });
     return Response.json({ answer: text.trim(), source: "ai", model } satisfies AskResponse);
   } catch (err) {
     console.warn("[ask] falling back:", err instanceof Error ? err.message : err);

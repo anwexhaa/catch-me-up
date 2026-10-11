@@ -160,7 +160,7 @@ export function CatchMeUpApp() {
   const showOnboarding = !profile || editingProfile;
 
   return (
-    <main className="min-h-dvh lg:flex lg:items-start lg:justify-center lg:gap-8 lg:px-6 lg:py-6">
+    <main className="min-h-dvh lg:flex lg:h-dvh lg:items-start lg:justify-center lg:gap-8 lg:overflow-hidden lg:px-6 lg:py-6">
       <section className="relative flex h-dvh w-full flex-col overflow-hidden bg-bg lg:h-[min(880px,calc(100dvh-48px))] lg:w-[420px] lg:rounded-[28px] lg:border lg:border-line lg:shadow-2xl lg:shadow-black/50">
         <header className="flex items-center gap-2 border-b border-line bg-bg/95 px-4 py-3">
           <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-accent to-accent-2 text-black">
@@ -296,7 +296,7 @@ export function CatchMeUpApp() {
         )}
       </section>
 
-      <aside className="hidden w-[340px] shrink-0 space-y-4 lg:block">
+      <aside className="scroll-thin hidden max-h-full w-[340px] shrink-0 space-y-4 overflow-y-auto lg:block">
         <div className="rounded-2xl border border-line bg-surface p-5">{controls}</div>
         <div className="rounded-2xl border border-line bg-surface p-5">
           <AboutCard />

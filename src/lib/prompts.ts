@@ -110,7 +110,7 @@ const LANGUAGE_RULES: Record<string, string> = {
   en: "Write in natural, friendly English.",
   hi: "Write in natural conversational Hindi in Devanagari script, the way TV commentators speak. Cricket words like over, wicket, run rate can stay as Devanagari transliterations (ओवर, विकेट).",
   hinglish:
-    "Write in Hinglish: a natural Hindi-English mix in Roman script, the way Indian fans text each other (for example: 'Klaasen ne Axar ke over mein 24 runs thok diye!').",
+    "Write in Hinglish: a natural Hindi-English mix in Roman script, the way Indian fans text each other (for example: 'Klaasen ne Axar ke over mein 24 runs thok diye!'). Use Roman script only, never Devanagari.",
   bn: "Write in natural conversational Bengali in Bengali script.",
   ta: "Write in natural conversational Tamil in Tamil script.",
   te: "Write in natural conversational Telugu in Telugu script.",

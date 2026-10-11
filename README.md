@@ -50,7 +50,7 @@ Browser ── replay clock (wall-clock based, so a background tab "misses" the 
      /api/recap, /api/ask  (Next.js route handlers)
         │  prompt built from deliveries[0..n] + fan profile
         ▼
-     Google Gemini (gemini-2.5-flash → flash-lite fallback)  ──fails──►  rule-based summary
+     Google Gemini (gemini-3.5-flash → flash-lite fallback)  ──fails──►  rule-based summary
 ```
 
 Key files:
@@ -95,7 +95,7 @@ node scripts/build-match-data.mjs data/cricsheet/1415755.json src/data/match.jso
 
 ## AI tools used
 
-- **Google Gemini API** (gemini-2.5-flash / flash-lite) powers the recaps and the chat in the product.
+- **Google Gemini API** (gemini-3.5-flash, with 3.5-flash-lite as backup) powers the recaps and the chat in the product.
 - **Claude Code** was used as a pair programmer to build the app.
 
 ## Credits
