@@ -362,7 +362,7 @@ export const EVENTS: MatchEvent[] = (() => {
         n,
         kind: "innings-end",
         team,
-        weight: 9,
+        weight: 18,
         text: `INNINGS BREAK: ${team} finish on ${scoreText(inn)}. ${TEAMS[1]} need ${inn.runs + 1} to win.`,
       });
     }

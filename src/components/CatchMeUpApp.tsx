@@ -1,10 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { History, ListOrdered, Radio, SlidersHorizontal, X } from "lucide-react";
-import { MATCH, TEAMS, stateAt } from "@/lib/match";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Coffee, History, ListOrdered, Radio, SlidersHorizontal, X } from "lucide-react";
+import { MATCH, OVERS, overIndexAt, skipOvers, stateAt } from "@/lib/match";
+import { languageOf, type Profile } from "@/lib/profile";
 import { useReplayClock } from "./useReplayClock";
+import { useSavedProfile } from "./browser";
 import { DemoControls, JUMP_POINTS } from "./DemoControls";
+import { Onboarding } from "./Onboarding";
+import { CatchUpPanel, type Gap } from "./CatchUpPanel";
 import { ScoreHeader } from "./ScoreHeader";
 import { MomentumChart } from "./MomentumChart";
 import { BallFeed } from "./BallFeed";
@@ -14,17 +18,79 @@ import { TeamBadge } from "./ui";
 type Tab = "live" | "scorecard";
 
 const DEFAULT_JOIN = JUMP_POINTS[3];
+const MIN_AWAY_BALLS = 6; // roughly an over; anything shorter isn't worth a recap
+const STEP_AWAY_MS = 1600;
 
 export function CatchMeUpApp() {
   const clock = useReplayClock(DEFAULT_JOIN.n);
   const s = useMemo(() => stateAt(clock.ball), [clock.ball]);
-  const [joined, setJoined] = useState(false);
+  const [savedProfile, saveProfile] = useSavedProfile();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [editingProfile, setEditingProfile] = useState(false);
   const [tab, setTab] = useState<Tab>("live");
   const [demoOpen, setDemoOpen] = useState(false);
+  const [gap, setGap] = useState<Gap | null>(null);
+  const [stepping, setStepping] = useState<number | null>(null);
+  const awayFrom = useRef<number | null>(null);
+  const gapIds = useRef(0);
 
-  const join = () => {
-    setJoined(true);
+  const openGap = (from: number, to: number, via: Gap["via"]) => {
+    gapIds.current += 1;
+    setGap({ from, to, via, id: gapIds.current });
+    setTab("live");
+  };
+
+  // Notice when the fan leaves the tab and comes back, like a real second screen would.
+  const { currentBall } = clock;
+  useEffect(() => {
+    if (!profile) return;
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        awayFrom.current = currentBall();
+        return;
+      }
+      const from = awayFrom.current;
+      awayFrom.current = null;
+      const to = currentBall();
+      if (from !== null && to - from >= MIN_AWAY_BALLS) {
+        gapIds.current += 1;
+        setGap({ from, to, via: "away", id: gapIds.current });
+        setTab("live");
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [profile, currentBall]);
+
+  const join = (p: Profile) => {
+    saveProfile(p);
+    setProfile(p);
+    if (editingProfile) {
+      setEditingProfile(false);
+      return;
+    }
     clock.seek(DEFAULT_JOIN.n, { play: true });
+    if (DEFAULT_JOIN.n > 0) openGap(0, DEFAULT_JOIN.n, "joined-late");
+  };
+
+  const stepAway = (overs: number) => {
+    const from = clock.currentBall();
+    const to = skipOvers(from, overs);
+    if (to <= from || stepping !== null) return;
+    setDemoOpen(false);
+    setStepping(overs);
+    setTimeout(() => {
+      clock.seek(to);
+      setStepping(null);
+      openGap(from, to, "away");
+    }, STEP_AWAY_MS);
+  };
+
+  const recapLast = (overs: number) => {
+    const to = clock.currentBall();
+    const k = overIndexAt(to);
+    const from = OVERS[Math.max(0, k - overs + (to >= OVERS[k].endN ? 1 : 0))].startN;
+    if (to > from) openGap(from, to, "manual");
   };
 
   const controls = (
@@ -36,8 +102,33 @@ export function CatchMeUpApp() {
       onPause={clock.pause}
       onSpeed={clock.setSpeed}
       onSeek={(n) => clock.seek(n)}
-    />
+    >
+      {profile && (
+        <div>
+          <p className="mb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted">Simulate stepping away</p>
+          <div className="grid grid-cols-3 gap-1.5">
+            {[2, 3, 5].map((k) => (
+              <button
+                key={k}
+                type="button"
+                onClick={() => stepAway(k)}
+                disabled={clock.ball >= MATCH.deliveries.length}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-accent/40 bg-accent/10 py-2 text-xs font-medium text-accent hover:bg-accent/20 disabled:opacity-40"
+              >
+                <Coffee size={13} /> {k} overs
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-[11px] leading-relaxed text-muted">
+            The match keeps going while you&apos;re gone. You can also switch to another browser tab for a while: the app
+            notices when you come back.
+          </p>
+        </div>
+      )}
+    </DemoControls>
   );
+
+  const showOnboarding = !profile || editingProfile;
 
   return (
     <main className="min-h-dvh lg:flex lg:items-start lg:justify-center lg:gap-8 lg:px-6 lg:py-6">
@@ -47,28 +138,63 @@ export function CatchMeUpApp() {
             <History size={16} strokeWidth={2.5} />
           </span>
           <span className="font-semibold tracking-tight">Catch Me Up</span>
-          {joined && (
+          {profile && (
             <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold tracking-wider text-accent">
               <span className="live-dot h-1.5 w-1.5 rounded-full bg-accent" /> LIVE
             </span>
           )}
-          <button
-            type="button"
-            onClick={() => setDemoOpen(true)}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-xs text-muted hover:text-text lg:hidden"
-          >
-            <SlidersHorizontal size={13} /> Demo
-          </button>
+          <div className="ml-auto flex items-center gap-1.5">
+            {profile && !editingProfile && (
+              <button
+                type="button"
+                onClick={() => setEditingProfile(true)}
+                className="inline-flex items-center gap-1.5 rounded-full border border-line py-0.5 pl-0.5 pr-2.5 text-xs text-muted hover:text-text"
+                aria-label="Edit your preferences"
+              >
+                {profile.team ? <TeamBadge team={profile.team} size="sm" /> : <span className="px-1.5">Neutral</span>}
+                {languageOf(profile.language).native}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setDemoOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-xs text-muted hover:text-text lg:hidden"
+            >
+              <SlidersHorizontal size={13} /> Demo
+            </button>
+          </div>
         </header>
 
-        {!joined ? (
-          <JoinScreen onJoin={join} />
+        {showOnboarding || !profile ? (
+          <Onboarding
+            key={savedProfile ? JSON.stringify(savedProfile) : "new"}
+            initial={profile ?? savedProfile}
+            joinText={profile ? undefined : DEFAULT_JOIN.joinText}
+            submitLabel={profile ? "Save preferences" : "Join the live match"}
+            onDone={join}
+          />
         ) : (
           <>
             <div className="scroll-thin flex-1 space-y-3 overflow-y-auto p-3">
               {tab === "live" && (
                 <>
+                  {gap && <CatchUpPanel key={gap.id} gap={gap} profile={profile} onDismiss={() => setGap(null)} />}
                   <ScoreHeader s={s} />
+                  {!gap && s.n > 0 && (
+                    <div className="flex items-center gap-2 px-1 text-xs text-muted">
+                      <span>Missed something? Recap the last</span>
+                      {[1, 3, 5].map((k) => (
+                        <button
+                          key={k}
+                          type="button"
+                          onClick={() => recapLast(k)}
+                          className="rounded-full border border-line px-2 py-0.5 hover:border-text/40 hover:text-text"
+                        >
+                          {k} over{k > 1 ? "s" : ""}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <MomentumChart n={s.n} />
                   <BallFeed n={s.n} />
                 </>
@@ -99,6 +225,24 @@ export function CatchMeUpApp() {
           </>
         )}
 
+        {stepping !== null && (
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-bg/95 p-8 text-center">
+            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent">
+              <Coffee size={26} />
+            </span>
+            <div>
+              <p className="text-lg font-semibold">You stepped away…</p>
+              <p className="mt-1 text-sm text-muted">
+                {stepping} overs later (about {stepping * 4} minutes of real match time)
+              </p>
+            </div>
+            <div className="h-1 w-48 overflow-hidden rounded-full bg-surface-2">
+              <div className="h-full bg-accent" style={{ animation: `grow ${STEP_AWAY_MS}ms linear forwards` }} />
+            </div>
+            <style>{`@keyframes grow { from { width: 0 } to { width: 100% } }`}</style>
+          </div>
+        )}
+
         {demoOpen && (
           <div className="absolute inset-0 z-20 flex flex-col justify-end bg-black/60 lg:hidden" onClick={() => setDemoOpen(false)}>
             <div className="rise-in rounded-t-3xl border-t border-line bg-surface p-5" onClick={(e) => e.stopPropagation()}>
@@ -115,32 +259,5 @@ export function CatchMeUpApp() {
         <div className="rounded-2xl border border-line bg-surface p-5">{controls}</div>
       </aside>
     </main>
-  );
-}
-
-function JoinScreen({ onJoin }: { onJoin: () => void }) {
-  return (
-    <div className="flex flex-1 flex-col justify-center gap-6 p-6">
-      <div>
-        <h1 className="text-2xl font-bold leading-tight tracking-tight">Can&apos;t watch every ball? We&apos;ve got you.</h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          Follow the match in bursts. When you come back, get a short, personal recap of what you missed, in your language.
-        </p>
-      </div>
-      <div className="rounded-2xl border border-line bg-surface p-4">
-        <p className="text-[11px] uppercase tracking-wider text-muted">{MATCH.event}</p>
-        <div className="mt-3 flex items-center gap-3">
-          <TeamBadge team={TEAMS[0]} />
-          <span className="text-sm">{TEAMS[0]}</span>
-          <span className="mx-auto text-xs text-muted">vs</span>
-          <span className="text-sm">{TEAMS[1]}</span>
-          <TeamBadge team={TEAMS[1]} />
-        </div>
-        <p className="mt-3 text-xs text-muted">You&apos;re joining during {DEFAULT_JOIN.joinText}.</p>
-      </div>
-      <button type="button" onClick={onJoin} className="rounded-xl bg-accent py-3 font-semibold text-black hover:opacity-90">
-        Join the live match
-      </button>
-    </div>
   );
 }
