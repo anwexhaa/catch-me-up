@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #070b14;
+  --surface: #0f1524;
+  --surface-2: #161e33;
+  --line: #222b42;
+  --text: #eaf0fb;
+  --muted: #8b96b2;
+  --accent: #ff5a3c;
+  --accent-2: #ffc94a;
+  --ind: #2f7bff;
+  --sa: #12b76a;
+  --wicket: #f43f5e;
+  --four: #f59e0b;
+  --six: #a855f7;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-ind: var(--ind);
+  --color-sa: var(--sa);
+  --color-wicket: var(--wicket);
+  --color-four: var(--four);
+  --color-six: var(--six);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Thin, unobtrusive scrollbars inside the phone frame */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.live-dot {
+  animation: live-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.rise-in {
+  animation: rise-in 0.35s ease-out both;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, #1f2942 50%, var(--surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-dot,
+  .rise-in,
+  .skeleton {
+    animation: none;
+  }
 }
