@@ -161,15 +161,19 @@ export function CatchMeUpApp() {
 
   return (
     <main className="min-h-dvh lg:flex lg:h-dvh lg:items-start lg:justify-center lg:gap-8 lg:overflow-hidden lg:px-6 lg:py-6">
-      <section className="relative flex h-dvh w-full flex-col overflow-hidden bg-bg lg:h-[min(880px,calc(100dvh-48px))] lg:w-[420px] lg:rounded-[28px] lg:border lg:border-line lg:shadow-2xl lg:shadow-black/50">
-        <header className="flex items-center gap-2 border-b border-line bg-bg/95 px-4 py-3">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-accent to-accent-2 text-black">
+      <section className="relative flex h-dvh w-full flex-col overflow-hidden bg-bg lg:h-[min(880px,calc(100dvh-48px))] lg:w-[420px] lg:rounded-[28px] lg:border lg:border-line lg:shadow-[0_30px_60px_-30px_rgba(29,39,51,0.45)]">
+        <header className="relative flex items-center gap-2 bg-surface px-4 py-3 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-gradient-to-r after:from-transparent after:via-accent-2/60 after:to-transparent">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent text-accent-2 shadow-sm ring-1 ring-inset ring-accent-2/40">
             <History size={16} strokeWidth={2.5} />
           </span>
-          <span className="whitespace-nowrap font-semibold tracking-tight">Catch Me Up</span>
+          <span className="whitespace-nowrap font-display text-[17px] font-bold tracking-tight">Catch Me Up</span>
           {profile && (
-            <span className="ml-1 inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold tracking-wider text-accent">
-              <span className="live-dot h-1.5 w-1.5 rounded-full bg-accent" /> LIVE
+            <span className="fade-in ml-1 inline-flex items-center gap-1.5 rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold tracking-wider text-on-accent">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-2 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent-2" />
+              </span>
+              LIVE
             </span>
           )}
           <div className="ml-auto flex items-center gap-1.5">
@@ -177,7 +181,7 @@ export function CatchMeUpApp() {
               <button
                 type="button"
                 onClick={() => setEditingProfile(true)}
-                className="inline-flex items-center gap-1.5 rounded-full border border-line p-0.5 text-xs text-muted hover:text-text min-[400px]:pr-2.5"
+                className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface p-0.5 text-xs text-muted hover:border-text/30 hover:text-text min-[400px]:pr-2.5"
                 aria-label="Edit your preferences"
               >
                 {profile.team ? <TeamBadge team={profile.team} size="sm" /> : <span className="px-1.5">Neutral</span>}
@@ -187,7 +191,7 @@ export function CatchMeUpApp() {
             <button
               type="button"
               onClick={() => setDemoOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-full border border-line px-2 py-1 text-xs text-muted hover:text-text sm:px-2.5 lg:hidden"
+              className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-2 py-1 text-xs text-muted hover:border-text/30 hover:text-text sm:px-2.5 lg:hidden"
               aria-label="Demo controls"
             >
               <SlidersHorizontal size={13} /> Demo
@@ -205,7 +209,7 @@ export function CatchMeUpApp() {
           />
         ) : (
           <>
-            <div className="scroll-thin flex-1 space-y-3 overflow-y-auto p-3">
+            <div key={tab} className="fade-in scroll-thin flex-1 space-y-3 overflow-y-auto p-3">
               {tab === "live" && (
                 <>
                   {gap && <CatchUpPanel key={gap.id} gap={gap} profile={profile} onDismiss={() => setGap(null)} onAsk={ask} />}
@@ -218,7 +222,7 @@ export function CatchMeUpApp() {
                           key={k}
                           type="button"
                           onClick={() => recapLast(k)}
-                          className="rounded-full border border-line px-2 py-0.5 hover:border-text/40 hover:text-text"
+                          className="rounded-full border border-line bg-surface px-2 py-0.5 hover:border-accent hover:text-accent"
                         >
                           {k} over{k > 1 ? "s" : ""}
                         </button>
@@ -237,7 +241,12 @@ export function CatchMeUpApp() {
               {tab !== "ask" && <p className="px-2 pb-2 pt-1 text-center text-[10px] text-muted/70">Ball-by-ball data: {MATCH.source}</p>}
             </div>
 
-            <nav className="grid grid-cols-3 border-t border-line bg-bg">
+            <nav className="relative grid grid-cols-3 border-t border-line bg-surface">
+              <span
+                className="absolute top-0 h-0.5 w-1/3 bg-accent transition-transform duration-300 ease-out"
+                style={{ transform: `translateX(${["live", "ask", "scorecard"].indexOf(tab) * 100}%)` }}
+                aria-hidden
+              />
               {(
                 [
                   ["live", "Live", Radio],
@@ -249,10 +258,10 @@ export function CatchMeUpApp() {
                   key={id}
                   type="button"
                   onClick={() => setTab(id)}
-                  className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] ${tab === id ? "text-text" : "text-muted"}`}
+                  className={`flex flex-col items-center gap-0.5 py-2.5 text-[11px] ${tab === id ? "font-semibold text-accent" : "text-muted hover:text-text"}`}
                   aria-current={tab === id ? "page" : undefined}
                 >
-                  <Icon size={18} />
+                  <Icon size={18} className={`transition-transform duration-300 ${tab === id ? "-translate-y-0.5 scale-110" : ""}`} />
                   {label}
                 </button>
               ))}
@@ -261,25 +270,24 @@ export function CatchMeUpApp() {
         )}
 
         {stepping !== null && (
-          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-bg/95 p-8 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/15 text-accent">
-              <Coffee size={26} />
+          <div className="fade-in absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-bg/95 p-8 text-center backdrop-blur-sm">
+            <span className="bob flex h-16 w-16 items-center justify-center rounded-full bg-accent text-accent-2 shadow-lg ring-4 ring-accent/15">
+              <Coffee size={28} />
             </span>
-            <div>
-              <p className="text-lg font-semibold">You stepped away…</p>
+            <div className="rise-in">
+              <p className="font-display text-2xl font-bold">You stepped away…</p>
               <p className="mt-1 text-sm text-muted">
                 {stepping} overs later (about {stepping * 4} minutes of real match time)
               </p>
             </div>
-            <div className="h-1 w-48 overflow-hidden rounded-full bg-surface-2">
-              <div className="h-full bg-accent" style={{ animation: `grow ${STEP_AWAY_MS}ms linear forwards` }} />
+            <div className="h-1.5 w-52 overflow-hidden rounded-full bg-surface-2 ring-1 ring-inset ring-line">
+              <div className="h-full rounded-full bg-gradient-to-r from-accent to-accent-2" style={{ animation: `grow ${STEP_AWAY_MS}ms ease-in-out forwards` }} />
             </div>
-            <style>{`@keyframes grow { from { width: 0 } to { width: 100% } }`}</style>
           </div>
         )}
 
         {demoOpen && (
-          <div className="absolute inset-0 z-20 flex flex-col justify-end bg-black/60 lg:hidden" onClick={() => setDemoOpen(false)}>
+          <div className="fade-in absolute inset-0 z-20 flex flex-col justify-end bg-text/40 backdrop-blur-[2px] lg:hidden" onClick={() => setDemoOpen(false)}>
             <div
               className="rise-in scroll-thin max-h-[88%] overflow-y-auto rounded-t-3xl border-t border-line bg-surface p-5"
               onClick={(e) => e.stopPropagation()}
@@ -297,8 +305,8 @@ export function CatchMeUpApp() {
       </section>
 
       <aside className="scroll-thin hidden max-h-full w-[340px] shrink-0 space-y-4 overflow-y-auto lg:block">
-        <div className="rounded-2xl border border-line bg-surface p-5">{controls}</div>
-        <div className="rounded-2xl border border-line bg-surface p-5">
+        <div className="rise-in rounded-2xl border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(29,39,51,0.05)]">{controls}</div>
+        <div className="rise-in rounded-2xl border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(29,39,51,0.05)]" style={{ animationDelay: "0.1s" }}>
           <AboutCard />
         </div>
       </aside>

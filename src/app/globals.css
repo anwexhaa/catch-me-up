@@ -1,19 +1,26 @@
 @import "tailwindcss";
 
+/* Classic cricket palette: parchment and ivory, ink navy, claret and old gold,
+   with a pavilion-green scoreboard. */
 :root {
-  --bg: #070b14;
-  --surface: #0f1524;
-  --surface-2: #161e33;
-  --line: #222b42;
-  --text: #eaf0fb;
-  --muted: #8b96b2;
-  --accent: #ff5a3c;
-  --accent-2: #ffc94a;
-  --ind: #2f7bff;
-  --sa: #12b76a;
-  --wicket: #f43f5e;
-  --four: #f59e0b;
-  --six: #a855f7;
+  --bg: #f3ede1;
+  --surface: #fbf8f1;
+  --surface-2: #efe7d6;
+  --line: #ddd2bc;
+  --text: #1d2733;
+  --muted: #6f6a5d;
+  --accent: #7b1e2f;
+  --on-accent: #fbf8f1;
+  --accent-2: #a87b23;
+  --board: #183f30;
+  --board-2: #21513e;
+  --on-board: #f3ead2;
+  --on-board-muted: #b4c2b2;
+  --ind: #1f4f9c;
+  --sa: #23805a;
+  --wicket: #b42318;
+  --four: #d0a043;
+  --six: #4b3a8f;
 }
 
 @theme inline {
@@ -24,7 +31,12 @@
   --color-text: var(--text);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
   --color-accent-2: var(--accent-2);
+  --color-board: var(--board);
+  --color-board-2: var(--board-2);
+  --color-on-board: var(--on-board);
+  --color-on-board-muted: var(--on-board-muted);
   --color-ind: var(--ind);
   --color-sa: var(--sa);
   --color-wicket: var(--wicket);
@@ -32,23 +44,28 @@
   --color-six: var(--six);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair);
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  /* faint paper grain */
+  background-image: radial-gradient(rgba(29, 39, 51, 0.035) 1px, transparent 1px);
+  background-size: 4px 4px;
   color: var(--text);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-/* Thin, unobtrusive scrollbars inside the phone frame */
 .scroll-thin {
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
 }
+
+/* ---------- motion ---------- */
 
 @keyframes live-pulse {
   0%,
@@ -66,7 +83,7 @@ body {
 @keyframes rise-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -74,7 +91,131 @@ body {
   }
 }
 .rise-in {
-  animation: rise-in 0.35s ease-out both;
+  animation: rise-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fade-in {
+  animation: fade-in 0.35s ease-out both;
+}
+
+/* A score or number that just changed */
+@keyframes score-pop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.score-pop {
+  display: inline-block;
+  animation: score-pop 0.5s ease-out;
+}
+
+/* A ball chip arriving */
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.12);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.chip-in {
+  animation: chip-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* FOUR / SIX / WICKET callout on the scoreboard */
+@keyframes callout {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.85);
+  }
+  12% {
+    opacity: 1;
+    transform: translateY(0) scale(1.06);
+  }
+  20% {
+    transform: scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.callout {
+  animation: callout 2.2s ease-out forwards;
+}
+
+/* Momentum line drawing itself on first render (path uses pathLength="1") */
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.draw-in {
+  stroke-dasharray: 1;
+  animation: draw 1.4s ease-out both;
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.scale-in {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: scale-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1.4) both;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(4deg);
+  }
+}
+.bob {
+  animation: bob 1.2s ease-in-out infinite;
+}
+
+@keyframes grow {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
 }
 
 @keyframes shimmer {
@@ -86,16 +227,31 @@ body {
   }
 }
 .skeleton {
-  background: linear-gradient(90deg, var(--surface-2) 25%, #1f2942 50%, var(--surface-2) 75%);
+  background: linear-gradient(90deg, var(--surface-2) 25%, #f8f2e4 50%, var(--surface-2) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s linear infinite;
   border-radius: 6px;
 }
 
+/* Gentle press feedback on every button */
+button {
+  transition:
+    transform 0.12s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .live-dot,
-  .rise-in,
-  .skeleton {
-    animation: none;
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

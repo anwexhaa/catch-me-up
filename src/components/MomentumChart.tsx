@@ -48,20 +48,22 @@ export function MomentumChart({ n, onExplain }: { n: number; onExplain?: (tp: Tu
 
         {n > 0 && (
           <>
-            <path d={area} fill={TEAM_COLOR[TEAMS[0]]} opacity="0.22" clipPath="url(#above)" />
-            <path d={area} fill={TEAM_COLOR[TEAMS[1]]} opacity="0.22" clipPath="url(#below)" />
-            <path d={line} fill="none" stroke="var(--text)" strokeWidth="1.6" strokeLinejoin="round" />
+            <g className="fade-in">
+              <path d={area} fill={TEAM_COLOR[TEAMS[0]]} opacity="0.18" clipPath="url(#above)" />
+              <path d={area} fill={TEAM_COLOR[TEAMS[1]]} opacity="0.18" clipPath="url(#below)" />
+            </g>
+            <path d={line} pathLength={1} className="draw-in" fill="none" stroke="var(--text)" strokeWidth="1.6" strokeLinejoin="round" />
           </>
         )}
 
         {wickets.map((k) => (
-          <circle key={k} cx={x(k)} cy={y(WIN_SERIES[k])} r="2.4" fill="var(--wicket)" />
+          <circle key={k} className="scale-in" cx={x(k)} cy={y(WIN_SERIES[k])} r="2.6" fill="var(--wicket)" stroke="var(--surface)" strokeWidth="0.8" />
         ))}
 
         {tps.map((tp, k) => (
-          <g key={tp.n}>
-            <circle cx={x(tp.n)} cy={y(WIN_SERIES[tp.n])} r="7" fill="var(--accent-2)" />
-            <text x={x(tp.n)} y={y(WIN_SERIES[tp.n]) + 3} fontSize="9" fontWeight="700" textAnchor="middle" fill="#000">
+          <g key={tp.n} className="scale-in" style={{ animationDelay: `${0.15 + k * 0.08}s` }}>
+            <circle cx={x(tp.n)} cy={y(WIN_SERIES[tp.n])} r="7" fill="var(--accent-2)" stroke="var(--surface)" strokeWidth="1.2" />
+            <text x={x(tp.n)} y={y(WIN_SERIES[tp.n]) + 3} fontSize="9" fontWeight="700" textAnchor="middle" fill="var(--surface)">
               {k + 1}
             </text>
           </g>
@@ -86,7 +88,7 @@ export function MomentumChart({ n, onExplain }: { n: number; onExplain?: (tp: Tu
             const toward = tp.swing > 0 ? TEAMS[0] : TEAMS[1];
             const inner = (
               <>
-                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-2 text-[10px] font-bold text-black">{k + 1}</span>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent-2 text-[10px] font-bold text-surface">{k + 1}</span>
                 <span className="flex-1">
                   {short(TEAMS[tp.over.i])} over {tp.over.o + 1} · {tp.over.bowler} · {tp.over.runs} run{tp.over.runs === 1 ? "" : "s"}
                   {tp.over.wkts ? `, ${tp.over.wkts} wkt` : ""}
@@ -94,15 +96,20 @@ export function MomentumChart({ n, onExplain }: { n: number; onExplain?: (tp: Tu
                 <span className="font-semibold" style={{ color: TEAM_COLOR[toward] }}>
                   +{Math.round(Math.abs(tp.swing) * 100)} {short(toward)}
                 </span>
+                {onExplain && (
+                  <span className="w-0 overflow-hidden whitespace-nowrap text-[11px] text-accent opacity-0 transition-all duration-200 group-hover:w-12 group-hover:opacity-100">
+                    Why? →
+                  </span>
+                )}
               </>
             );
             return (
-              <li key={tp.n}>
+              <li key={tp.n} className="rise-in" style={{ animationDelay: `${k * 0.06}s` }}>
                 {onExplain ? (
                   <button
                     type="button"
                     onClick={() => onExplain(tp)}
-                    className="flex w-full items-center gap-2 rounded-lg px-1.5 py-1 text-left text-[13px] hover:bg-surface-2"
+                    className="group flex w-full items-center gap-2 rounded-lg px-1.5 py-1 text-left text-[13px] hover:bg-surface-2"
                   >
                     {inner}
                   </button>

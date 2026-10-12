@@ -11,9 +11,10 @@ import { TEAM_COLOR } from "./ui";
 export type Gap = { from: number; to: number; via: "joined-late" | "away" | "manual"; id: number };
 
 const responses = new Map<string, Promise<RecapResponse>>();
+const recapKey = (gap: Gap, profile: Profile) => `${gap.from}-${gap.to}-${profileKey(profile)}`;
 
 function requestRecap(gap: Gap, profile: Profile): Promise<RecapResponse> {
-  const key = `${gap.from}-${gap.to}-${profileKey(profile)}`;
+  const key = recapKey(gap, profile);
   if (!responses.has(key)) {
     const req = fetch("/api/recap", {
       method: "POST",
@@ -49,7 +50,8 @@ export function CatchUpPanel({
   onDismiss: () => void;
   onAsk?: (question: string) => void;
 }) {
-  const [started, setStarted] = useState(gap.via === "manual");
+  // Already requested (e.g. before switching tabs)? Show it again straight away.
+  const [started, setStarted] = useState(() => gap.via === "manual" || responses.has(recapKey(gap, profile)));
   const [result, setResult] = useState<RecapResponse | null>(null);
   const [failed, setFailed] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -96,16 +98,16 @@ export function CatchUpPanel({
 
   return (
     <section
-      className="rise-in overflow-hidden rounded-2xl border bg-surface"
+      className="rise-in overflow-hidden rounded-2xl border-2 bg-surface shadow-[0_10px_30px_-18px_rgba(123,30,47,0.45)] transition-colors duration-500"
       style={{ borderColor: result ? MOOD_COLOR[result.mood] : "var(--accent)" }}
       aria-live="polite"
     >
       <div className="flex items-start gap-3 p-4 pb-3">
-        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
-          <Sparkles size={16} />
+        <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-on-accent">
+          <Sparkles size={16} className={started && !result && !failed ? "animate-spin [animation-duration:2.5s]" : ""} />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="font-semibold">{title}</h2>
+          <h2 className="font-display text-lg font-bold leading-tight">{title}</h2>
           <p className="text-[13px] text-muted">{subtitle}</p>
         </div>
         <button type="button" onClick={onDismiss} className="text-muted hover:text-text" aria-label="Dismiss recap">
@@ -133,7 +135,7 @@ export function CatchUpPanel({
           <button
             type="button"
             onClick={() => setStarted(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-2.5 font-semibold text-black hover:opacity-90"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-2.5 font-semibold text-on-accent shadow-[0_6px_16px_-8px_rgba(123,30,47,0.7)] hover:bg-[#8f2538]"
           >
             <Zap size={16} /> Catch me up
           </button>
@@ -156,17 +158,17 @@ export function CatchUpPanel({
 
       {result && (
         <div className="p-4 pt-3">
-          <p className="text-lg font-bold leading-snug">{result.recap.headline}</p>
+          <p className="rise-in font-display text-xl font-bold leading-snug">{result.recap.headline}</p>
           <ul className="mt-2.5 space-y-2">
             {result.recap.bullets.map((b, k) => (
-              <li key={k} className="flex gap-2.5 text-[14px] leading-relaxed text-text/90">
+              <li key={k} className="rise-in flex gap-2.5 text-[14px] leading-relaxed text-text/90" style={{ animationDelay: `${0.12 + k * 0.12}s` }}>
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: MOOD_COLOR[result.mood] }} />
                 {b}
               </li>
             ))}
           </ul>
           {result.recap.watchNext && (
-            <p className="mt-3 rounded-xl bg-surface-2 px-3 py-2 text-[13px] leading-relaxed">
+            <p className="rise-in mt-3 rounded-xl border-l-4 border-accent-2 bg-surface-2 px-3 py-2 text-[13px] leading-relaxed" style={{ animationDelay: "0.5s" }}>
               <span className="font-semibold text-accent-2">Watch next · </span>
               {result.recap.watchNext}
             </p>

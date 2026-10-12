@@ -28,7 +28,7 @@ export function DemoControls({ ball, playing, speed, onPlay, onPause, onSpeed, o
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-sm font-semibold">Demo controls</h2>
+        <h2 className="font-display text-lg font-bold">Demo controls</h2>
         <p className="mt-1 text-xs leading-relaxed text-muted">
           The app replays the real ICC Men&apos;s T20 World Cup 2024 final ball by ball, as if it were live. In production this would
           read a live scores feed.
@@ -39,7 +39,7 @@ export function DemoControls({ ball, playing, speed, onPlay, onPause, onSpeed, o
         <button
           type="button"
           onClick={playing ? onPause : onPlay}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-text text-bg hover:opacity-90"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-on-accent shadow-sm hover:bg-[#8f2538]"
           aria-label={playing ? "Pause replay" : "Play replay"}
         >
           {playing ? <Pause size={18} /> : <Play size={18} className="ml-0.5" />}

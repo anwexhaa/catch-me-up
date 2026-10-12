@@ -15,7 +15,7 @@ export function AboutCard() {
   return (
     <div className="space-y-4 text-[13px] leading-relaxed">
       <div>
-        <h2 className="text-sm font-semibold">Try it in 60 seconds</h2>
+        <h2 className="font-display text-base font-bold">Try it in 60 seconds</h2>
         <ol className="mt-2 space-y-1.5">
           {STEPS.map((step, k) => (
             <li key={k} className="flex gap-2.5 text-text/85">
@@ -29,7 +29,7 @@ export function AboutCard() {
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold">The fan problem</h2>
+        <h2 className="font-display text-base font-bold">The fan problem</h2>
         <p className="mt-1 text-muted">
           Most fans can&apos;t sit through a 3½-hour T20. They check in between work, classes and commutes, and the scoreboard gives
           them numbers, not the story. Catch Me Up tells you what you missed, for you: your team, your favourite player, your
@@ -38,7 +38,7 @@ export function AboutCard() {
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold">Under the hood</h2>
+        <h2 className="font-display text-base font-bold">Under the hood</h2>
         <p className="mt-1 text-muted">
           A replay engine and a simple win-chance model run in the browser. Recaps and answers come from Google Gemini, which only
           ever sees the match up to the current ball, so nothing is spoiled. If the AI is unavailable, a rule-based summary steps in.

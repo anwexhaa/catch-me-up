@@ -15,27 +15,21 @@ export default function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "linear-gradient(135deg, #070b14 0%, #161e33 100%)",
-          color: "#eaf0fb",
+          background: "#f3ede1",
+          color: "#1d2733",
+          border: "18px solid #183f30",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: 16,
-              background: "linear-gradient(135deg, #ff5a3c, #ffc94a)",
-            }}
-          />
-          <div style={{ fontSize: 40, fontWeight: 700 }}>Catch Me Up</div>
+          <div style={{ width: 64, height: 64, borderRadius: 16, background: "#7b1e2f", border: "3px solid #a87b23" }} />
+          <div style={{ fontSize: 42, fontWeight: 700 }}>Catch Me Up</div>
           <div
             style={{
               marginLeft: 12,
               padding: "6px 16px",
               borderRadius: 999,
-              background: "rgba(255,90,60,0.18)",
-              color: "#ff5a3c",
+              background: "#7b1e2f",
+              color: "#fbf8f1",
               fontSize: 22,
               fontWeight: 700,
             }}
@@ -44,15 +38,15 @@ export default function Image() {
           </div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-          <div style={{ fontSize: 68, fontWeight: 800, lineHeight: 1.1 }}>Can&apos;t watch every ball?</div>
-          <div style={{ fontSize: 34, color: "#8b96b2", lineHeight: 1.35 }}>
+          <div style={{ fontSize: 70, fontWeight: 800, lineHeight: 1.1 }}>Can&apos;t watch every ball?</div>
+          <div style={{ fontSize: 34, color: "#6f6a5d", lineHeight: 1.35 }}>
             Personal &ldquo;what did I miss?&rdquo; recaps in your language, live win chance and an ask-the-match chat.
           </div>
         </div>
         <div style={{ display: "flex", gap: 16, fontSize: 26 }}>
-          <div style={{ padding: "8px 18px", borderRadius: 10, background: "#2f7bff", fontWeight: 700 }}>IND</div>
-          <div style={{ padding: "8px 18px", borderRadius: 10, background: "#12b76a", fontWeight: 700 }}>SA</div>
-          <div style={{ display: "flex", alignItems: "center", color: "#8b96b2" }}>T20 World Cup 2024 final, replayed live</div>
+          <div style={{ padding: "8px 18px", borderRadius: 10, background: "#1f4f9c", color: "#fff", fontWeight: 700 }}>IND</div>
+          <div style={{ padding: "8px 18px", borderRadius: 10, background: "#23805a", color: "#fff", fontWeight: 700 }}>SA</div>
+          <div style={{ display: "flex", alignItems: "center", color: "#a87b23" }}>T20 World Cup 2024 final, replayed live</div>
         </div>
       </div>
     ),

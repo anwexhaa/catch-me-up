@@ -27,7 +27,7 @@ export function BallFeed({ n }: { n: number }) {
           return (
             <div key={`${ov.i}-${ov.o}`}>
               {done && ov.endN === SECOND_INNINGS_START && (
-                <p className="mb-3 rounded-lg bg-surface-2 px-3 py-2 text-center text-xs text-muted">
+                <p className="mb-3 rounded-lg border border-accent-2/40 bg-surface-2 px-3 py-2 text-center font-display text-[13px] text-text">
                   Innings break · {TEAMS[0]} {scoreText(stateAt(SECOND_INNINGS_START).innings[0])} · {TEAMS[1]} need{" "}
                   {stateAt(SECOND_INNINGS_START).innings[0].runs + 1}
                 </p>
@@ -37,14 +37,20 @@ export function BallFeed({ n }: { n: number }) {
                   {short(TEAMS[ov.i])} · Over {ov.o + 1} · {ov.bowler}
                 </span>
                 <span className="text-muted">
-                  {done ? `${runs} run${runs === 1 ? "" : "s"}${ov.wkts ? `, ${ov.wkts} wkt` : ""} · ${ov.score}` : "in progress"}
+                  {done ? (
+                    `${runs} run${runs === 1 ? "" : "s"}${ov.wkts ? `, ${ov.wkts} wkt` : ""} · ${ov.score}`
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 text-accent">
+                      <span className="live-dot h-1.5 w-1.5 rounded-full bg-accent" /> in progress
+                    </span>
+                  )}
                 </span>
               </div>
               <ul className="space-y-1">
                 {balls.map((d, k) => (
-                  <li key={k} className="flex items-center gap-2.5 text-[13px]">
+                  <li key={upto - 1 - k} className="rise-in flex items-center gap-2.5 text-[13px]">
                     <span className="w-8 shrink-0 text-right font-mono text-[11px] text-muted">{ballLabel(d)}</span>
-                    <BallChip d={d} size="sm" />
+                    <BallChip d={d} size="sm" animate={upto - 1 - k === n - 1} />
                     <span className={d.w ? "font-semibold text-wicket" : d.r >= 4 ? "text-text" : "text-text/75"}>{describeBall(d)}</span>
                   </li>
                 ))}
@@ -54,7 +60,7 @@ export function BallFeed({ n }: { n: number }) {
         })}
       </div>
       {overs.length > shown && (
-        <button type="button" onClick={() => setShown((s) => s + 5)} className="mt-4 w-full rounded-lg border border-line py-2 text-xs text-muted hover:text-text">
+        <button type="button" onClick={() => setShown((s) => s + 5)} className="mt-4 w-full rounded-lg border border-line py-2 text-xs text-muted hover:border-text/30 hover:text-text">
           Show earlier overs
         </button>
       )}

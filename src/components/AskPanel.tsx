@@ -63,8 +63,8 @@ export function AskPanel({
 
   return (
     <div className="flex min-h-full flex-col gap-3">
-      <section className="rounded-2xl border border-line bg-surface p-4">
-        <h2 className="flex items-center gap-2 font-semibold">
+      <section className="rise-in rounded-2xl border border-line bg-surface p-4 shadow-[0_1px_2px_rgba(29,39,51,0.05)]">
+        <h2 className="flex items-center gap-2 font-display text-lg font-bold">
           <MessageCircle size={16} className="text-accent" /> Ask the match
         </h2>
         <p className="mt-1 text-[13px] leading-relaxed text-muted">
@@ -75,11 +75,11 @@ export function AskPanel({
       <div className="flex-1 space-y-3">
         {messages.map((m, k) =>
           m.role === "user" ? (
-            <div key={k} className="ml-10 rounded-2xl rounded-br-md bg-accent/90 px-3.5 py-2.5 text-[14px] text-black">
+            <div key={k} className="rise-in ml-10 rounded-2xl rounded-br-md bg-accent px-3.5 py-2.5 text-[14px] text-on-accent shadow-sm">
               {m.text}
             </div>
           ) : (
-            <div key={k} className="mr-6 rounded-2xl rounded-bl-md border border-line bg-surface px-3.5 py-2.5">
+            <div key={k} className="rise-in mr-6 rounded-2xl rounded-bl-md border border-line border-l-4 border-l-accent-2 bg-surface px-3.5 py-2.5 shadow-sm">
               <p className="whitespace-pre-line text-[14px] leading-relaxed">{m.text}</p>
               <div className="mt-1.5 flex items-center gap-2 text-[10px] text-muted">
                 <span>
@@ -94,16 +94,16 @@ export function AskPanel({
           ),
         )}
         {pending && (
-          <div className="mr-6 flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3.5" aria-label="Thinking">
+          <div className="fade-in mr-6 flex items-center gap-1.5 rounded-2xl rounded-bl-md border border-line bg-surface px-4 py-3.5" aria-label="Thinking">
             {[0, 1, 2].map((i) => (
-              <span key={i} className="live-dot h-1.5 w-1.5 rounded-full bg-muted" style={{ animationDelay: `${i * 0.2}s` }} />
+              <span key={i} className="h-1.5 w-1.5 animate-bounce rounded-full bg-accent-2" style={{ animationDelay: `${i * 0.15}s` }} />
             ))}
           </div>
         )}
         <div ref={endRef} />
       </div>
 
-      <div className="sticky bottom-0 -mx-3 -mb-3 space-y-2 border-t border-line bg-bg/95 p-3 backdrop-blur">
+      <div className="sticky bottom-0 -mx-3 -mb-3 space-y-2 border-t border-line bg-surface/95 p-3 backdrop-blur">
         <div className="scroll-thin -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5">
           {suggestionsFor(s, profile).map((q) => (
             <button
@@ -111,7 +111,7 @@ export function AskPanel({
               type="button"
               onClick={() => send(q)}
               disabled={pending}
-              className="shrink-0 rounded-full border border-line px-3 py-1.5 text-xs text-text/85 hover:border-text/40 disabled:opacity-50"
+              className="shrink-0 rounded-full border border-line bg-surface px-3 py-1.5 text-xs text-text/85 hover:border-accent hover:text-accent disabled:opacity-50"
             >
               {q}
             </button>
@@ -129,13 +129,13 @@ export function AskPanel({
             onChange={(e) => setDraft(e.target.value)}
             maxLength={300}
             placeholder="Ask about the match…"
-            className="h-11 flex-1 rounded-xl border border-line bg-surface px-3.5 text-[14px] outline-none placeholder:text-muted focus:border-text/40"
+            className="h-11 flex-1 rounded-xl border border-line bg-bg px-3.5 text-[14px] outline-none transition-shadow placeholder:text-muted focus:border-accent focus:ring-2 focus:ring-accent/15"
             aria-label="Your question"
           />
           <button
             type="submit"
             disabled={pending || !draft.trim()}
-            className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-black disabled:opacity-40"
+            className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent text-on-accent shadow-sm hover:bg-[#8f2538] disabled:opacity-40"
             aria-label="Send question"
           >
             <Send size={17} />
