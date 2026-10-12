@@ -24,10 +24,11 @@ These are illustrative fans (hypothetical people, not research participants) sho
 
 | Fan | Situation | Need | What meets it |
 | --- | --- | --- | --- |
-| **Priya, 28, Bengaluru** | The final clashes with her cousin's sangeet; she checks her phone between dances. | The story in 20 seconds whenever she checks back in, in the Hinglish she texts in. | Away detection, "what did I miss?" recaps, Hinglish |
-| **Subrata, 71, Kolkata** | Has followed India since 1983; the grandkids have the TV and small English text is hard to read. | Bengali updates he can listen to, with real cricket detail. | Bengali recaps, read-aloud, die-hard mode |
-| **Sam, 31, London** | New to cricket; her South African flatmate talked her into the final. | To understand what's happening and why it matters, without jargon. | New-to-cricket mode, Ask the match, win chance |
-| **Thabo, 35, Johannesburg** | Proteas die-hard on a hospital shift with two-minute breaks. | The numbers that matter, fast, and no spoilers. | Die-hard mode, turning points, spoiler-safe AI |
+| **Aditi, 23, Bengaluru** | Grew up in Delhi, now a product analyst; the final clashes with her team's offsite dinner. | The story in 20 seconds whenever she checks back in, in the Hinglish she texts in. | Away detection, "what did I miss?" recaps, Hinglish |
+| **Ritwik, 22, Kolkata** | Final-year engineering student at Jadavpur on an all-nighter, allowing himself two-minute breaks. | The numbers that matter, fast, and no spoilers. | Die-hard mode, turning points, spoiler-safe AI |
+| **Sreeja, 21, Kolkata** | A Mohun Bagan supporter who barely follows cricket, at a watch party with friends on Park Street. | To understand what's happening and why it matters, without jargon. | New-to-cricket mode, Ask the match, win chance |
+| **Tapas, 54, Kolkata** | A friend's dad who has followed India since 1983, stuck at a wedding reception without his reading glasses. | Bengali updates he can listen to, with real cricket detail. | Bengali recaps, read-aloud, die-hard mode |
+| **Raghavan, 57, Chennai** | Another friend's dad and lifelong CSK fan, on temple festival duty in Mylapore all evening. | Tamil updates he can listen to between duties. | Tamil recaps, read-aloud, away detection |
 
 ## How AI is used
 

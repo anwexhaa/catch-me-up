@@ -1,14 +1,16 @@
 import { X } from "lucide-react";
 import { languageOf } from "@/lib/profile";
 import { SCENARIOS, initials, type Scenario } from "@/lib/scenarios";
-import { TEAM_COLOR } from "./ui";
+// One colour per fan so the avatars are easy to tell apart.
+const AVATAR_COLORS = ["var(--accent)", "var(--ind)", "var(--sa)", "var(--accent-2)", "var(--six)"];
+const avatarColor = (s: Scenario) => AVATAR_COLORS[SCENARIOS.findIndex((x) => x.id === s.id) % AVATAR_COLORS.length];
 
 function Avatar({ s, size = "md" }: { s: Scenario; size?: "sm" | "md" }) {
   const dims = size === "sm" ? "h-7 w-7 text-xs" : "h-9 w-9 text-sm";
   return (
     <span
       className={`flex shrink-0 items-center justify-center rounded-full font-display font-bold text-white ring-2 ring-surface ${dims}`}
-      style={{ background: s.profile.team ? TEAM_COLOR[s.profile.team] : "var(--text)" }}
+      style={{ background: avatarColor(s) }}
       aria-hidden
     >
       {initials(s)}
@@ -30,7 +32,9 @@ export function ScenarioPicker({ onPick }: { onPick: (s: Scenario) => void }) {
             key={s.id}
             type="button"
             onClick={() => onPick(s)}
-            className="rise-in group flex flex-col gap-1.5 rounded-xl border border-line bg-surface p-3 text-left hover:border-accent hover:shadow-md"
+            className={`rise-in group flex flex-col gap-1.5 rounded-xl border border-line bg-surface p-3 text-left hover:border-accent hover:shadow-md ${
+              SCENARIOS.length % 2 === 1 && k === SCENARIOS.length - 1 ? "col-span-2" : ""
+            }`}
             style={{ animationDelay: `${0.12 + k * 0.06}s` }}
             aria-label={`Try the app as ${s.name} from ${s.place}`}
           >
