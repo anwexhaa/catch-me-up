@@ -73,6 +73,15 @@ export function AskPanel({
       </section>
 
       <div className="flex-1 space-y-3">
+        {messages.length === 0 && !pending && (
+          <div className="fade-in flex flex-col items-center px-6 pt-16 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full border border-accent-2/50 bg-surface text-accent-2">
+              <MessageCircle size={22} />
+            </span>
+            <p className="mt-3 font-display text-lg font-bold">What do you want to know?</p>
+            <p className="mt-1 text-[13px] text-muted">Pick a question below or type your own.</p>
+          </div>
+        )}
         {messages.map((m, k) =>
           m.role === "user" ? (
             <div key={k} className="rise-in ml-10 rounded-2xl rounded-br-md bg-accent px-3.5 py-2.5 text-[14px] text-on-accent shadow-sm">
