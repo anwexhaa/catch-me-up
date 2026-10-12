@@ -16,6 +16,8 @@ import { Scorecard } from "./Scorecard";
 import { AskPanel, type ChatMessage } from "./AskPanel";
 import { TeamBadge } from "./ui";
 import { AboutCard } from "./AboutCard";
+import { ScenarioStrip } from "./Scenarios";
+import type { Scenario } from "@/lib/scenarios";
 
 type Tab = "live" | "ask" | "scorecard";
 
@@ -34,6 +36,7 @@ export function CatchMeUpApp() {
   const [gap, setGap] = useState<Gap | null>(null);
   const [stepping, setStepping] = useState<number | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [scenario, setScenario] = useState<Scenario | null>(null);
   const [asking, setAsking] = useState(false);
   const awayFrom = useRef<number | null>(null);
   const gapIds = useRef(0);
@@ -69,12 +72,24 @@ export function CatchMeUpApp() {
   const join = (p: Profile) => {
     saveProfile(p);
     setProfile(p);
+    setScenario(null);
     if (editingProfile) {
       setEditingProfile(false);
       return;
     }
     clock.seek(DEFAULT_JOIN.n, { play: true });
     if (DEFAULT_JOIN.n > 0) openGap(0, DEFAULT_JOIN.n, "joined-late");
+  };
+
+  /** Become one of the illustrative fans: their profile, joining at their moment in the match. */
+  const startScenario = (sc: Scenario) => {
+    setProfile(sc.profile);
+    setScenario(sc);
+    setEditingProfile(false);
+    setDemoOpen(false);
+    setMessages([]);
+    clock.seek(sc.joinAt, { play: true });
+    openGap(0, sc.joinAt, "joined-late");
   };
 
   const stepAway = (overs: number) => {
@@ -206,12 +221,14 @@ export function CatchMeUpApp() {
             joinText={profile ? undefined : DEFAULT_JOIN.joinText}
             submitLabel={profile ? "Save preferences" : "Join the live match"}
             onDone={join}
+            onScenario={profile ? undefined : startScenario}
           />
         ) : (
           <>
             <div key={tab} className="fade-in scroll-thin flex-1 space-y-3 overflow-y-auto p-3">
               {tab === "live" && (
                 <>
+                  {scenario && <ScenarioStrip s={scenario} onClose={() => setScenario(null)} />}
                   {gap && <CatchUpPanel key={gap.id} gap={gap} profile={profile} onDismiss={() => setGap(null)} onAsk={ask} />}
                   <ScoreHeader s={s} />
                   {!gap && s.n > 0 && (
@@ -297,7 +314,7 @@ export function CatchMeUpApp() {
               </button>
               {controls}
               <div className="mt-6 border-t border-line pt-5">
-                <AboutCard />
+                <AboutCard onPick={startScenario} />
               </div>
             </div>
           </div>
@@ -307,7 +324,7 @@ export function CatchMeUpApp() {
       <aside className="scroll-thin hidden max-h-full w-[340px] shrink-0 space-y-4 overflow-y-auto lg:block">
         <div className="rise-in rounded-2xl border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(29,39,51,0.05)]">{controls}</div>
         <div className="rise-in rounded-2xl border border-line bg-surface p-5 shadow-[0_1px_2px_rgba(29,39,51,0.05)]" style={{ animationDelay: "0.1s" }}>
-          <AboutCard />
+          <AboutCard onPick={startScenario} />
         </div>
       </aside>
     </main>

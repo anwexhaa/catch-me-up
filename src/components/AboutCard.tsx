@@ -1,5 +1,8 @@
+import type { Scenario } from "@/lib/scenarios";
+import { ScenarioList } from "./Scenarios";
+
 const STEPS = [
-  <>Pick your team, a favourite player and a language. You join during South Africa&apos;s chase, after 10 overs.</>,
+  <>Pick a fan scenario, or set your own team, favourite player and language.</>,
   <>
     Tap <b>Catch me up</b> for the story so far.
   </>,
@@ -11,7 +14,7 @@ const STEPS = [
   </>,
 ];
 
-export function AboutCard() {
+export function AboutCard({ onPick }: { onPick?: (s: Scenario) => void }) {
   return (
     <div className="space-y-4 text-[13px] leading-relaxed">
       <div>
@@ -27,6 +30,8 @@ export function AboutCard() {
           ))}
         </ol>
       </div>
+
+      <ScenarioList onPick={onPick} />
 
       <div>
         <h2 className="font-display text-base font-bold">The fan problem</h2>

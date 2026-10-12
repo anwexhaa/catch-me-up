@@ -18,6 +18,17 @@ Catch Me Up notices when you've been away and, when you return, tells you what y
 
 The demo replays the real **ICC Men's T20 World Cup 2024 final (India vs South Africa)** ball by ball as if it were live, so it works on any day. You join during South Africa's chase, just before the game turns.
 
+## Who it's for
+
+These are illustrative fans (hypothetical people, not research participants) showing which need each feature meets. Each one is a one-tap preset on the welcome screen.
+
+| Fan | Situation | Need | What meets it |
+| --- | --- | --- | --- |
+| **Priya, 28, Bengaluru** | The final clashes with her cousin's sangeet; she checks her phone between dances. | The story in 20 seconds whenever she checks back in, in the Hinglish she texts in. | Away detection, "what did I miss?" recaps, Hinglish |
+| **Subrata, 71, Kolkata** | Has followed India since 1983; the grandkids have the TV and small English text is hard to read. | Bengali updates he can listen to, with real cricket detail. | Bengali recaps, read-aloud, die-hard mode |
+| **Sam, 31, London** | New to cricket; her South African flatmate talked her into the final. | To understand what's happening and why it matters, without jargon. | New-to-cricket mode, Ask the match, win chance |
+| **Thabo, 35, Johannesburg** | Proteas die-hard on a hospital shift with two-minute breaks. | The numbers that matter, fast, and no spoilers. | Die-hard mode, turning points, spoiler-safe AI |
+
 ## How AI is used
 
 | Where | What the AI does |

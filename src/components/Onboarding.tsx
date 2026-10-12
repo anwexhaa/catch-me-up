@@ -3,7 +3,9 @@
 import { useState, type ReactNode } from "react";
 import { MATCH, PLAYERS_BY_TEAM, TEAMS } from "@/lib/match";
 import { DEFAULT_PROFILE, LANGUAGES, LEVELS, type Profile } from "@/lib/profile";
+import type { Scenario } from "@/lib/scenarios";
 import { TEAM_COLOR, TeamBadge } from "./ui";
+import { ScenarioPicker } from "./Scenarios";
 
 function Question({ title, hint, children, delay = 0 }: { title: string; hint?: string; children: ReactNode; delay?: number }) {
   return (
@@ -24,11 +26,13 @@ export function Onboarding({
   joinText,
   submitLabel,
   onDone,
+  onScenario,
 }: {
   initial: Profile | null;
   joinText?: string;
   submitLabel: string;
   onDone: (p: Profile) => void;
+  onScenario?: (s: Scenario) => void;
 }) {
   const [p, setP] = useState<Profile>(initial ?? DEFAULT_PROFILE);
   const set = (patch: Partial<Profile>) => setP((cur) => ({ ...cur, ...patch }));
@@ -56,6 +60,14 @@ export function Onboarding({
             <TeamBadge team={TEAMS[1]} />
           </div>
         </div>
+
+        {onScenario && <ScenarioPicker onPick={onScenario} />}
+
+        {onScenario && (
+          <div className="flex items-center gap-3 text-[11px] uppercase tracking-[0.16em] text-muted">
+            <span className="h-px flex-1 bg-line" /> or set up your own <span className="h-px flex-1 bg-line" />
+          </div>
+        )}
 
         <Question title="Who are you rooting for?" delay={0.16}>
           <div className="grid grid-cols-3 gap-2">
